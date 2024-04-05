@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace LenovoBootLogo {
+namespace PCBootLogo {
   
   public partial class MainForm : Form {
     
@@ -14,8 +14,8 @@ namespace LenovoBootLogo {
       Load += (s, e) => {
         model.CreateViewData();
         if (!model.UiIsEnable) {
-          MessageBox.Show("Unsupported BIOS!\nThis application only supports Lenovo computers with newer BIOS versions.", 
-            "Lenovo boot logo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          MessageBox.Show("Unsupported BIOS!\nThis application only supports computers with newer BIOS versions.", 
+            "PC boot logo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
           Application.Exit();
           return;
         }
@@ -35,18 +35,18 @@ namespace LenovoBootLogo {
     }
 
     private void btnApply_Click(object sender, EventArgs e) {
-      model.SaveLogoClick();
+      model.SaveLogoClick(cbxStretch.Checked);
       showTip();
     }
 
     private void showTip() {
       if (model.ShowWarning) {
-        MessageBox.Show(model.ShowWarnInfo, "Lenovo boot logo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(model.ShowWarnInfo, "PC boot logo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         model.ShowWarning = false;
       }
 
       if (model.ShowSuccessTip) {
-        MessageBox.Show(model.ShowSuccessText, "Lenovo boot logo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        MessageBox.Show(model.ShowSuccessText, "PC boot logo", MessageBoxButtons.OK, MessageBoxIcon.Information);
         model.ShowSuccessTip = false;
       }
 
@@ -61,7 +61,9 @@ namespace LenovoBootLogo {
 
     private void cbxShowLoadingIcon_CheckedChanged(object sender, EventArgs e) {
       if (!cbxShowLoadingIcon.Enabled) return;
-      MessageBox.Show(model.ChangeLodingIco(cbxShowLoadingIcon.Checked) ? "Done!" : "Failed!");
+      var result = model.ChangeLodingIco(cbxShowLoadingIcon.Checked);
+      MessageBox.Show(result ? "Done!" : "Failed!", "PC boot logo", MessageBoxButtons.OK, 
+        result ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
     }
   }
 }

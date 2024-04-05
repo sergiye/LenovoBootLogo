@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace LenovoBootLogo {
+namespace PCBootLogo {
 
   public static class ApiMethods {
   

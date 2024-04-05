@@ -1,19 +1,19 @@
-# Lenovo Boot Logo
+# PC Boot Logo
 
-[![Stars](https://img.shields.io/github/stars/sergiye/LenovoBootLogo?style=flat-square)](https://github.com/sergiye/LenovoBootLogo/stargazers)
-[![Fork](https://img.shields.io/github/forks/sergiye/LenovoBootLogo?style=flat-square)](https://github.com/sergiye/LenovoBootLogo/fork)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/sergiye/LenovoBootLogo?style=plastic)
-![GitHub all releases](https://img.shields.io/github/downloads/sergiye/LenovoBootLogo/total?style=plastic)
-![GitHub last commit](https://img.shields.io/github/last-commit/sergiye/LenovoBootLogo?style=plastic)
+[![Stars](https://img.shields.io/github/stars/sergiye/PCBootLogo?style=flat-square)](https://github.com/sergiye/PCBootLogo/stargazers)
+[![Fork](https://img.shields.io/github/forks/sergiye/PCBootLogo?style=flat-square)](https://github.com/sergiye/PCBootLogo/fork)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/sergiye/PCBootLogo?style=plastic)
+![GitHub all releases](https://img.shields.io/github/downloads/sergiye/PCBootLogo/total?style=plastic)
+![GitHub last commit](https://img.shields.io/github/last-commit/sergiye/PCBootLogo?style=plastic)
 
 
-LenovoBootLogo is a portable, open-source utility for customizing the boot logo (screen) of your Lenovo PC.
+PCBootLogo is a portable, open-source utility for customizing the boot logo (screen) of your PC.
 
 **This program will modify BIOS settings, use at your own risk.** The copyright of the code and binary files used belongs to the original manufacturer.
 
 ## Supported models
 
-***Only Lenovo computers (Legion, Yoga, Thinkbook, Ideapad, etc.) are supported.***
+***Only computers with new BIOS (tested on Lenovo: Legion, Yoga, Thinkbook, Ideapad, etc.) are supported.***
 
 ### How To Use
 
@@ -26,7 +26,7 @@ To use:
 
 **The recommended way to get the program is BUILD from source**
 - Install git, Visual Studio (2022 or higher)
-- `git clone https://github.com/sergiye/LenovoBootLogo.git`
+- `git clone https://github.com/sergiye/PCBootLogo.git`
 - build
 
 ----

@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 
-namespace LenovoBootLogo {
+namespace PCBootLogo {
 
   public class LogoModel {
     
@@ -31,6 +31,8 @@ namespace LenovoBootLogo {
     private string filter2 = "*.png;*.jpg;*.bmp";
 
     private string name;
+
+    public string EFILogoPath { get; set; } = "EFI\\Lenovo\\Logo"; //todo: support other vendors
 
     public bool DisplayLoadingIco { get; set; } = true;
 
@@ -188,7 +190,7 @@ namespace LenovoBootLogo {
       try {
         var text = ChangeEfiDisk(true);
         var hardDiskFreeSpace = GetHardDiskFreeSpace(text);
-        var path = Path.Combine(text + ":", "EFI\\Lenovo\\Logo");
+        var path = Path.Combine(text + ":", EFILogoPath);
         if (!defaultImage && Directory.Exists(path)) {
           var files = Directory.GetFiles(path);
           if (files.Length != 0) {
@@ -216,7 +218,7 @@ namespace LenovoBootLogo {
     public void ToRecovery() {
       try {
         name = ChangeEfiDisk(true);
-        var text = Path.Combine(name + ":\\", "EFI\\Lenovo\\Logo");
+        var text = Path.Combine(name + ":\\", EFILogoPath);
         DeleteOtherDirectory(text);
       }
       catch (Exception ex) {
@@ -267,7 +269,7 @@ namespace LenovoBootLogo {
       }
     }
 
-    public void SaveLogoClick() {
+    public void SaveLogoClick(bool stretch = false) {
       try {
         Console.WriteLine("SaveLogoClick");
         var num = ApiMethods.SetLogoDIYInfo(1);
@@ -280,22 +282,22 @@ namespace LenovoBootLogo {
 
         Console.WriteLine($"set logoinfo success:  ret = {num}");
         name = ChangeEfiDisk(true);
-        string text;
+        string destPath;
         try {
           var extension = Path.GetExtension(ImagePath1);
           if (!string.IsNullOrWhiteSpace(fileExtension) && extension != fileExtension) extension = fileExtension;
-          text = Path.Combine(name + ":\\", "EFI\\Lenovo\\Logo", $"mylogo_{DefaultWidth}x{DefaultHeight}" + extension);
-          Console.WriteLine($"path = {text}");
-          DeleteOtherFile(text);
-          Console.WriteLine($"source path = {ImagePath1}; dest path = {text}");
-          File.Copy(ImagePath1, text);
+          destPath = Path.Combine(name + ":\\", EFILogoPath, $"mylogo_{DefaultWidth}x{DefaultHeight}" + extension);
+          Console.WriteLine($"path = {destPath}");
+          DeleteOtherFile(destPath);
+          Console.WriteLine($"source path = {ImagePath1}; dest path = {destPath}");
+          File.Copy(ImagePath1, destPath);
         }
         catch (Exception ex) {
           Console.WriteLine("copy file error:" + ex.Message);
           return;
         }
 
-        if (ApiMethods.SetLogDIYCRC(text) > 0) {
+        if (ApiMethods.SetLogDIYCRC(destPath) > 0) {
           Console.WriteLine("Set CRC success");
           ChangeEfiDisk(false);
           ShowSuccessText = "Success! You can restart to view the new boot logo now.";

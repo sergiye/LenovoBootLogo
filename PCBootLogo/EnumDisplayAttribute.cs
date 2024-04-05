@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace LenovoBootLogo {
+namespace PCBootLogo {
 
   [AttributeUsage(AttributeTargets.Field)]
   public class EnumDisplayAttribute : Attribute {
