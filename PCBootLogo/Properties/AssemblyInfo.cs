@@ -2,9 +2,9 @@
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("PCBootLogo")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Utility for changing PC boot logo")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Sergiy Yegoshyn")]
 [assembly: AssemblyProduct("PCBootLogo")]
 [assembly: AssemblyCopyright("Copyright © Sergiy Egoshyn 2024")]
 [assembly: AssemblyTrademark("")]

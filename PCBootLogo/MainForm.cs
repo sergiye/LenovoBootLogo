@@ -15,7 +15,7 @@ namespace PCBootLogo {
         model.CreateViewData();
         if (!model.UiIsEnable) {
           MessageBox.Show("Unsupported BIOS!\nThis application only supports computers with newer BIOS versions.", 
-            "PC boot logo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            LogoModel.AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
           Application.Exit();
           return;
         }
@@ -35,18 +35,18 @@ namespace PCBootLogo {
     }
 
     private void btnApply_Click(object sender, EventArgs e) {
-      model.SaveLogoClick(cbxStretch.Checked);
+      model.SaveLogoClick();
       showTip();
     }
 
     private void showTip() {
       if (model.ShowWarning) {
-        MessageBox.Show(model.ShowWarnInfo, "PC boot logo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(model.ShowWarnInfo, LogoModel.AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         model.ShowWarning = false;
       }
 
       if (model.ShowSuccessTip) {
-        MessageBox.Show(model.ShowSuccessText, "PC boot logo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        MessageBox.Show(model.ShowSuccessText, LogoModel.AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
         model.ShowSuccessTip = false;
       }
 
@@ -62,7 +62,7 @@ namespace PCBootLogo {
     private void cbxShowLoadingIcon_CheckedChanged(object sender, EventArgs e) {
       if (!cbxShowLoadingIcon.Enabled) return;
       var result = model.ChangeLodingIco(cbxShowLoadingIcon.Checked);
-      MessageBox.Show(result ? "Done!" : "Failed!", "PC boot logo", MessageBoxButtons.OK, 
+      MessageBox.Show(result ? "Done!" : "Failed!", LogoModel.AppTitle, MessageBoxButtons.OK, 
         result ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
     }
   }

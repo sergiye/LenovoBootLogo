@@ -1,16 +1,23 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Windows.Media.Imaging;
 
 namespace PCBootLogo {
 
   public class LogoModel {
+
+    public const string AppTitle = "PC Boot Logo";
     
+    private string GetTempLogoFilePath(string extension) {
+      return $"mylogo_{DefaultWidth}x{DefaultHeight}{extension}";
+    }
+
     private enum FileExtension {
       [EnumDisplay(".jpg")] Jpg = 255216,
       // [EnumDisplay(".gif")] GIF = 7173,
@@ -32,7 +39,7 @@ namespace PCBootLogo {
 
     private string name;
 
-    public string EFILogoPath { get; set; } = "EFI\\Lenovo\\Logo"; //todo: support other vendors
+    private string EFILogoPath { get; set; } = "EFI\\Lenovo\\Logo"; //todo: support other vendors
 
     public bool DisplayLoadingIco { get; set; } = true;
 
@@ -40,9 +47,9 @@ namespace PCBootLogo {
 
     public string Filter { get; private set; } = "*.png,*.jpg,*.bmp";
 
-    public double ImageHeight { get; set; } = 140.0;
+    private double ImageHeight { get; set; } = 140.0;
 
-    public double ImageWidth { get; set; } = 224.0;
+    private double ImageWidth { get; set; } = 224.0;
 
     public bool ShowWarning { get; set; }
 
@@ -56,7 +63,7 @@ namespace PCBootLogo {
 
     public bool FunEnable { get; set; } = true;
 
-    public long DiskFreeSpace { get; private set; } = 54525952L;
+    private long DiskFreeSpace { get; set; } = 54525952L;
 
     public bool CanRecovery { get; set; }
 
@@ -64,7 +71,7 @@ namespace PCBootLogo {
 
     public int DefaultWidth { get => defaultWidth; set => defaultWidth = value; }
 
-    public string ImagePath1 { get; set; }
+    private string ImagePath { get; set; }
 
     public void CreateViewData() {
       ImageHeight = 140.0;
@@ -102,14 +109,14 @@ namespace PCBootLogo {
         var standardOutput = process.StandardOutput;
         var flag = false;
         while (!standardOutput.EndOfStream) {
-          var text2 = standardOutput.ReadLine();
-          if (text2.Contains("identifier") && text2.Contains("{globalsettings}"))
+          var line = standardOutput.ReadLine();
+          if (line.Contains("identifier") && line.Contains("{globalsettings}"))
             flag = true;
-          if (!flag || !text2.Contains("bootuxdisabled")) continue;
-          Console.WriteLine("gobalsettings: " + text2);
-          var text3 = text2.Replace("bootuxdisabled", "").Trim();
+          if (!flag || !line.Contains("bootuxdisabled")) continue;
+          Console.WriteLine("gobalsettings: " + line);
+          var text3 = line.Replace("bootuxdisabled", "").Trim();
           DisplayLoadingIco = text3.Contains("No");
-          Console.WriteLine($"{text2}; DisplayLoadingIco = {DisplayLoadingIco}");
+          Console.WriteLine($"{line}; DisplayLoadingIco = {DisplayLoadingIco}");
           flag = false;
         }
 
@@ -117,7 +124,7 @@ namespace PCBootLogo {
         process.Close();
       }
       catch (Exception ex) {
-        // ignored
+        Console.WriteLine(ex.Message);
       }
       finally {
         ApiMethods.Wow64RevertWow64FsRedirection(ptr);
@@ -133,8 +140,8 @@ namespace PCBootLogo {
           if (driveInfo.Name == diskName) return driveInfo.TotalFreeSpace;
         }
       }
-      catch (Exception) {
-        // ignored
+      catch (Exception ex) {
+        Console.WriteLine(ex.Message);
       }
 
       return 0L;
@@ -152,57 +159,39 @@ namespace PCBootLogo {
     }
 
     private bool IsSizeExceed(string path) {
-      Image image = null;
       try {
-        // Path.GetExtension(path);
-        image = Image.FromFile(path);
-        double num = image.Width;
-        double num2 = image.Height;
-        return num > DefaultWidth || num2 > DefaultHeight;
+        using (var image = Image.FromFile(path))
+          return image.Width > DefaultWidth || image.Height > DefaultHeight;
       }
       catch (Exception) {
         return false;
-      }
-      finally {
-        image?.Dispose();
       }
     }
 
-    private bool SetImageSize(string path) {
-      try {
-        // Path.GetExtension(path);
-        using (var image = Image.FromFile(path)) {
-          double num = image.Width;
-          double num2 = image.Height;
-          Console.WriteLine($"img h = {num2}; w = {num}");
-          ImageHeight = 140.0 * num2 / defaultHeight;
-          ImageWidth = 224.0 * num / defaultWidth;
-          return true;
-        }
-      }
-      catch (Exception) {
-        return false;
+    private void SetCurrentImage(string path) {
+      using (var image = Image.FromFile(path)) {
+        Console.WriteLine($"img h = {image.Height}; w = {image.Width}");
+        ImageHeight = 140.0 * image.Height / defaultHeight;
+        ImageWidth = 224.0 * image.Width / defaultWidth;
+        ImagePath = path;
       }
     }
 
     private void SetImagePath(bool defaultImage) {
-      var tempPath = Path.GetTempPath();
       try {
-        var text = ChangeEfiDisk(true);
-        var hardDiskFreeSpace = GetHardDiskFreeSpace(text);
-        var path = Path.Combine(text + ":", EFILogoPath);
+        var efiDisk = ChangeEfiDisk(true);
+        var hardDiskFreeSpace = GetHardDiskFreeSpace(efiDisk);
+        var path = Path.Combine(efiDisk + ":", EFILogoPath);
         if (!defaultImage && Directory.Exists(path)) {
-          var files = Directory.GetFiles(path);
-          if (files.Length != 0) {
-            var text2 = files[0];
-            tempPath = Path.Combine(tempPath, Path.GetFileName(text2));
-            File.Copy(text2, tempPath, true);
-            SetImageSize(tempPath);
-            GetBitmapImage(tempPath);
+          var fileName = Directory.GetFiles(path).FirstOrDefault();
+          if (!string.IsNullOrEmpty(fileName)) {
+            var tempPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(fileName));
+            File.Copy(fileName, tempPath, true);
+            SetCurrentImage(tempPath);
           }
         }
         else {
-          GetBitmapImage(defaultPath);
+          SetCurrentImage(defaultPath);
         }
 
         GetDiskFree(hardDiskFreeSpace);
@@ -261,15 +250,15 @@ namespace PCBootLogo {
         UiIsEnable = true;
       }
       else {
-        GetBitmapImage(defaultPath);
+        SetCurrentImage(defaultPath);
         Console.WriteLine("get logo_info error:");
         UiIsEnable = false;
         FunEnable = false;
         CanRecovery = false;
       }
     }
-
-    public void SaveLogoClick(bool stretch = false) {
+    
+    public void SaveLogoClick() {
       try {
         Console.WriteLine("SaveLogoClick");
         var num = ApiMethods.SetLogoDIYInfo(1);
@@ -284,13 +273,15 @@ namespace PCBootLogo {
         name = ChangeEfiDisk(true);
         string destPath;
         try {
-          var extension = Path.GetExtension(ImagePath1);
-          if (!string.IsNullOrWhiteSpace(fileExtension) && extension != fileExtension) extension = fileExtension;
-          destPath = Path.Combine(name + ":\\", EFILogoPath, $"mylogo_{DefaultWidth}x{DefaultHeight}" + extension);
+          var extension = Path.GetExtension(ImagePath);
+          if (!string.IsNullOrWhiteSpace(fileExtension) && extension != fileExtension) 
+            extension = fileExtension;
+          destPath = Path.Combine(name + ":\\", EFILogoPath, GetTempLogoFilePath(extension));
           Console.WriteLine($"path = {destPath}");
           DeleteOtherFile(destPath);
-          Console.WriteLine($"source path = {ImagePath1}; dest path = {destPath}");
-          File.Copy(ImagePath1, destPath);
+          Console.WriteLine($"source path = {ImagePath}; dest path = {destPath}");
+          
+          File.Copy(ImagePath, destPath);
         }
         catch (Exception ex) {
           Console.WriteLine("copy file error:" + ex.Message);
@@ -343,7 +334,7 @@ namespace PCBootLogo {
       var logicalDrives = Directory.GetLogicalDrives();
       for (var i = 65; i < 91; i++) {
         var aSciiEncoding = new ASCIIEncoding();
-        var bytes = new byte[] { (byte) i };
+        var bytes = new[] { (byte) i };
         var @string = aSciiEncoding.GetString(bytes);
         if (!logicalDrives.Contains(@string)) return @string;
       }
@@ -457,18 +448,23 @@ namespace PCBootLogo {
       openFileDialog.Multiselect = false;
       openFileDialog.Title = "Please select an image";
       openFileDialog.Filter = $"Image({Filter})|{filter2}";
-      var res = openFileDialog.ShowDialog();
-      if (res != DialogResult.OK) return;
+      if (openFileDialog.ShowDialog() != DialogResult.OK) return;
+
       CanRecovery = false;
       FunEnable = false;
       var fileName = openFileDialog.FileName;
-      var fileInfo = new FileInfo(fileName);
       if (!ImageCheck(fileName)) {
         ShowWarning = true;
         ShowWarnInfo = "The selected file is not an image!";
         return;
       }
 
+      var tempFile = Path.Combine(Path.GetTempPath(), GetTempLogoFilePath(Path.GetExtension(fileName)));
+      File.Copy(fileName, tempFile, true);
+      fileName = tempFile; //todo: delete tempFile on app exit
+      CheckResizeRequired(fileName, DefaultWidth, DefaultHeight, false);
+
+      var fileInfo = new FileInfo(fileName);
       if (fileInfo.Length > DiskFreeSpace) {
         var num = (int) (DiskFreeSpace / 1024 / 1024);
         ShowWarnInfo = $"Image must not exceed {num}MB!";
@@ -482,28 +478,77 @@ namespace PCBootLogo {
         return;
       }
 
-      GetBitmapImage(fileName);
-      SetImageSize(fileName);
+      SetCurrentImage(fileName);
       FunEnable = true;
       ShowWarning = false;
       Console.WriteLine($"SelectedImage: height = {ImageHeight}; width = {ImageWidth}");
     }
-
-    private void GetBitmapImage(string imagePath) {
-      try {
-        ImagePath1 = imagePath;
-        var bitmapImage = new BitmapImage();
-        bitmapImage.BeginInit();
-        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-        bitmapImage.UriSource = new Uri(imagePath);
-        bitmapImage.EndInit();
-        bitmapImage.Freeze();
-      }
-      catch (Exception ex) {
-        Console.WriteLine(ex);
-      }
+    
+    private static string GetMimeType(ImageFormat imageFormat) {
+      var codecs = ImageCodecInfo.GetImageEncoders();
+      return codecs.First(codec => codec.FormatID == imageFormat.Guid).MimeType;
     }
 
+    private static ImageFormat GetImageFormatFromMimeType(string contentType, ImageFormat defaultResult) {
+      if (GetMimeType(ImageFormat.Jpeg).Equals(contentType, StringComparison.OrdinalIgnoreCase)) {
+        return ImageFormat.Jpeg;
+      }
+      if (GetMimeType(ImageFormat.Bmp).Equals(contentType, StringComparison.OrdinalIgnoreCase)) {
+        return ImageFormat.Bmp;
+      }
+      if (GetMimeType(ImageFormat.Png).Equals(contentType, StringComparison.OrdinalIgnoreCase)) {
+        return ImageFormat.Png;
+      }
+
+      // foreach (var codecInfo in ImageCodecInfo.GetImageEncoders()) {
+      //   if (codecInfo.MimeType.Equals(contentType, StringComparison.OrdinalIgnoreCase)) {
+      //     return codecInfo.FormatID;
+      //   }
+      // }
+
+      return defaultResult;
+    }
+
+    private static void CheckResizeRequired(string filePath, int width, int height, bool proportional) {
+      Bitmap destImage = null;
+      try {
+        ImageFormat imgFormat;
+        using (var image = Image.FromFile(filePath)) {
+          if (proportional) {
+            var factor = Math.Min((double)width / image.Width, (double)height / image.Height);
+            width = (int)Math.Round(image.Width * factor);
+            height = (int)Math.Round(image.Height * factor);
+          }
+
+          if (width != image.Width || height != image.Height) {
+            if (MessageBox.Show("Resize image to fill screed?", AppTitle, MessageBoxButtons.YesNo,
+                  MessageBoxIcon.Question) == DialogResult.No)
+              return;
+          }
+          
+          imgFormat = GetImageFormatFromMimeType(GetMimeType(image.RawFormat), ImageFormat.Png);
+          var destRect = new Rectangle(0, 0, width, height);
+          destImage = new Bitmap(width, height);
+          destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+          using (var graphics = Graphics.FromImage(destImage)) {
+            graphics.CompositingMode = CompositingMode.SourceCopy;
+            graphics.CompositingQuality = CompositingQuality.HighQuality;
+            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            graphics.SmoothingMode = SmoothingMode.HighQuality;
+            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            using (var wrapMode = new ImageAttributes()) {
+              wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+              graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+            }
+          }
+        }
+        destImage.Save(filePath, imgFormat);
+      }
+      finally {
+        destImage?.Dispose();
+      }
+    }
+    
     private void ChangeSupportingFormat(uint format) {
       Filter = "";
       filter2 = "";
