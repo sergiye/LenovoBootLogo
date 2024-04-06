@@ -11,6 +11,13 @@ namespace PCBootLogo {
 
       InitializeComponent();
 
+      if (!ApiMethods.InitUnmanagedLibrary()) {
+        MessageBox.Show("Unable to initialize api library.", LogoModel.AppTitle, MessageBoxButtons.OK,
+          MessageBoxIcon.Warning);
+        Close();
+        Environment.Exit(-1);
+      }
+
       Load += (s, e) => {
         model.CreateViewData();
         if (!model.UiIsEnable) {

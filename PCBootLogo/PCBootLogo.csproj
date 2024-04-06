@@ -67,9 +67,7 @@
     <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="AIToolAPI.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <EmbeddedResource Include="AIToolAPI.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
