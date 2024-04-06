@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -19,11 +20,13 @@ namespace PCBootLogo {
     [DllImport("AIToolAPI.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern int IsEditionCircle();
 
+    private static string ApiLibraryDllPath = Path.Combine(Path.GetTempPath(), "AIToolAPI.dll");
+    private static IntPtr ApiLibraryDllHandler = IntPtr.Zero;
+
     public static bool InitUnmanagedLibrary() {
-      var dllPath = Path.Combine(Path.GetTempPath(), "AIToolAPI.dll");
       using (var resource = Assembly.GetExecutingAssembly().GetManifestResourceStream("PCBootLogo.AIToolAPI.dll")) {
         try {
-          using (var outFile = File.Create(dllPath)) {
+          using (var outFile = File.Create(ApiLibraryDllPath)) {
             const int sz = 4096;
             var buf = new byte[sz];
             while (true) {
@@ -33,7 +36,9 @@ namespace PCBootLogo {
               outFile.Write(buf, 0, nRead);
             }
           }
-          return LoadLibrary(dllPath) != IntPtr.Zero;
+
+          ApiLibraryDllHandler = LoadLibrary(ApiLibraryDllPath);
+          return ApiLibraryDllHandler != IntPtr.Zero;
         }
         catch {
           return false;
@@ -41,9 +46,30 @@ namespace PCBootLogo {
       }
     }
 
+    public static void ReleaseUnmanagedLibrary() {
+      //foreach (ProcessModule mod in Process.GetCurrentProcess().Modules) {
+      //  if (mod.ModuleName == ApiLibraryDllPath) FreeLibrary(mod.BaseAddress);
+      //}
+      if (ApiLibraryDllHandler != IntPtr.Zero) {
+        FreeLibrary(ApiLibraryDllHandler);
+        FreeLibrary(ApiLibraryDllHandler); //twice to decrease the reference count to 0
+      }
+      if (!string.IsNullOrEmpty(ApiLibraryDllPath)) {
+        try {
+          File.Delete(ApiMethods.ApiLibraryDllPath);
+        }
+        catch {
+          //ignore
+        }
+      }
+    }
+
     [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
     internal static extern IntPtr LoadLibrary(string lpFileName);
     
+    [DllImport("kernel32", SetLastError = true)]
+    internal static extern bool FreeLibrary(IntPtr hModule);
+
     [DllImport("Kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     internal static extern bool Wow64DisableWow64FsRedirection(ref IntPtr ptr);
 

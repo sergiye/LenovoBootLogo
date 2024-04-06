@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace PCBootLogo {
@@ -11,12 +14,7 @@ namespace PCBootLogo {
 
       InitializeComponent();
 
-      if (!ApiMethods.InitUnmanagedLibrary()) {
-        MessageBox.Show("Unable to initialize api library.", LogoModel.AppTitle, MessageBoxButtons.OK,
-          MessageBoxIcon.Warning);
-        Close();
-        Environment.Exit(-1);
-      }
+      Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
 
       Load += (s, e) => {
         model.CreateViewData();
@@ -33,6 +31,17 @@ namespace PCBootLogo {
         }
 
         lblFormat.Text = $"Format: {model.Filter} / Max: {model.DefaultWidth}x{model.DefaultHeight}";
+      };
+
+      FormClosed += (s, e) => {
+        try {
+          ApiMethods.ReleaseUnmanagedLibrary();
+          if (!string.IsNullOrEmpty(model.ImagePath))
+            File.Delete(model.ImagePath);
+        }
+        catch {
+          //ignore
+        }
       };
     }
 

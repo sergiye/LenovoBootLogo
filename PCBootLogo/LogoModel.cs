@@ -13,7 +13,7 @@ namespace PCBootLogo {
   public class LogoModel {
 
     public const string AppTitle = "PC Boot Logo";
-    
+
     private string GetTempLogoFilePath(string extension) {
       return $"mylogo_{DefaultWidth}x{DefaultHeight}{extension}";
     }
@@ -71,7 +71,7 @@ namespace PCBootLogo {
 
     public int DefaultWidth { get => defaultWidth; set => defaultWidth = value; }
 
-    private string ImagePath { get; set; }
+    public string ImagePath { get; set; }
 
     public void CreateViewData() {
       ImageHeight = 140.0;
