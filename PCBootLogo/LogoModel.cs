@@ -169,12 +169,14 @@ namespace PCBootLogo {
     }
 
     private void SetCurrentImage(string path) {
-      using (var image = Image.FromFile(path)) {
-        Console.WriteLine($"img h = {image.Height}; w = {image.Width}");
-        ImageHeight = 140.0 * image.Height / defaultHeight;
-        ImageWidth = 224.0 * image.Width / defaultWidth;
-        ImagePath = path;
+      if (File.Exists(path)) {
+        using (var image = Image.FromFile(path)) {
+          Console.WriteLine($"img h = {image.Height}; w = {image.Width}");
+          ImageHeight = 140.0 * image.Height / defaultHeight;
+          ImageWidth = 224.0 * image.Width / defaultWidth;
+        }
       }
+      ImagePath = path;
     }
 
     private void SetImagePath(bool defaultImage) {
