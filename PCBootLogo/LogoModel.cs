@@ -27,23 +27,15 @@ namespace PCBootLogo {
       [EnumDisplay(".jpeg")] Jpeg = 65496
     }
 
-    private int defaultHeight = 1080;
-
-    private readonly string defaultPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images/pc.png");
-
-    private int defaultWidth = 1920;
-
     private string fileExtension = "";
-
-    private string filter2 = "*.png;*.jpg;*.bmp";
-
+    
     private string name;
 
     private string EFILogoPath { get; set; } = "EFI\\Lenovo\\Logo"; //todo: support other vendors
 
-    public bool DisplayLoadingIco { get; set; } = true;
+    public bool DisplayLoadingIco { get; private set; } = true;
 
-    public bool VisibleLoadingIco { get; set; }
+    public bool VisibleLoadingIco { get; private set; }
 
     public string Filter { get; private set; } = "*.png,*.jpg,*.bmp";
 
@@ -53,25 +45,33 @@ namespace PCBootLogo {
 
     public bool ShowWarning { get; set; }
 
-    public string ShowWarnInfo { get; set; }
+    public string ShowWarnInfo { get; private set; }
 
     public bool ShowSuccessTip { get; set; }
 
-    public string ShowSuccessText { get; set; } = "";
+    public string ShowSuccessText { get; private set; } = "";
 
-    public bool UiIsEnable { get; set; } = true;
+    public bool UiIsEnable { get; private set; } = true;
 
-    public bool FunEnable { get; set; } = true;
+    public bool FunEnable { get; private set; } = true;
 
     private long DiskFreeSpace { get; set; } = 54525952L;
 
-    public bool CanRecovery { get; set; }
+    public bool CanRecovery { get; private set; }
 
-    public int DefaultHeight { get => defaultHeight; set => defaultHeight = value; }
+    private int defaultHeight = 1080;
+    public int DefaultHeight { 
+      get => defaultHeight;
+      private set => defaultHeight = value; 
+    }
 
-    public int DefaultWidth { get => defaultWidth; set => defaultWidth = value; }
+    private int defaultWidth = 1920;
+    public int DefaultWidth { 
+      get => defaultWidth;
+      private set => defaultWidth = value; 
+    }
 
-    public string ImagePath { get; set; }
+    public string ImagePath { get; private set; }
 
     public void CreateViewData() {
       ImageHeight = 140.0;
@@ -192,9 +192,6 @@ namespace PCBootLogo {
             SetCurrentImage(tempPath);
           }
         }
-        else {
-          SetCurrentImage(defaultPath);
-        }
 
         GetDiskFree(hardDiskFreeSpace);
       }
@@ -211,6 +208,7 @@ namespace PCBootLogo {
         name = ChangeEfiDisk(true);
         var text = Path.Combine(name + ":\\", EFILogoPath);
         DeleteOtherDirectory(text);
+        SetCurrentImage(null);
       }
       catch (Exception ex) {
         Console.WriteLine(ex);
@@ -252,7 +250,6 @@ namespace PCBootLogo {
         UiIsEnable = true;
       }
       else {
-        SetCurrentImage(defaultPath);
         Console.WriteLine("get logo_info error:");
         UiIsEnable = false;
         FunEnable = false;
@@ -262,6 +259,19 @@ namespace PCBootLogo {
     
     public void SaveLogoClick() {
       try {
+
+        if (string.IsNullOrEmpty(ImagePath)) {
+          ShowWarning = true;
+          ShowWarnInfo = "No image selected";
+          return;
+        }
+
+        if (!File.Exists(ImagePath)) {
+          ShowWarning = true;
+          ShowWarnInfo = $"File '{ImagePath}' is not found.";
+          return;
+        }
+        
         Console.WriteLine("SaveLogoClick");
         var num = ApiMethods.SetLogoDIYInfo(1);
         Console.WriteLine($"set logoinfo ret = {num}");
@@ -369,7 +379,7 @@ namespace PCBootLogo {
       }
     }
 
-    public bool ChangeLodingIco(bool isShow) {
+    public static bool ChangeLoadingIco(bool isShow) {
       var ptr = default(IntPtr);
       try {
         ApiMethods.Wow64DisableWow64FsRedirection(ref ptr);
@@ -449,7 +459,7 @@ namespace PCBootLogo {
       var openFileDialog = new OpenFileDialog();
       openFileDialog.Multiselect = false;
       openFileDialog.Title = "Please select an image";
-      openFileDialog.Filter = $"Image({Filter})|{filter2}";
+      openFileDialog.Filter = $"Image({Filter})|{Filter.Replace(',', ';')}";
       if (openFileDialog.ShowDialog() != DialogResult.OK) return;
 
       CanRecovery = false;
@@ -553,24 +563,19 @@ namespace PCBootLogo {
     
     private void ChangeSupportingFormat(uint format) {
       Filter = "";
-      filter2 = "";
       if ((1u & format) != 0) {
         Filter += "*.jpg,";
-        filter2 += "*.jpg;";
       }
 
       if ((0x10u & format) != 0) {
         Filter += "*.bmp,";
-        filter2 += "*.bmp;";
       }
 
       if ((0x20u & format) != 0) {
         Filter += "*.png,";
-        filter2 += "*.png;";
       }
 
       Filter = Filter.Substring(0, Filter.Length - 1);
-      filter2 = filter2.Substring(0, filter2.Length - 1);
     }
 
     // private enum ButtonStyle {

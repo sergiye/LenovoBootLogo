@@ -22,11 +22,13 @@ namespace PCBootLogo
       this.cbxShowLoadingIcon = new System.Windows.Forms.CheckBox();
       this.label1 = new System.Windows.Forms.Label();
       this.lblFormat = new System.Windows.Forms.Label();
+      this.picPreview = new System.Windows.Forms.PictureBox();
+      ((System.ComponentModel.ISupportInitialize)(this.picPreview)).BeginInit();
       this.SuspendLayout();
       // 
       // btnSelectImage
       // 
-      this.btnSelectImage.Location = new System.Drawing.Point(18, 18);
+      this.btnSelectImage.Location = new System.Drawing.Point(11, 51);
       this.btnSelectImage.Margin = new System.Windows.Forms.Padding(2);
       this.btnSelectImage.Name = "btnSelectImage";
       this.btnSelectImage.Size = new System.Drawing.Size(149, 55);
@@ -38,7 +40,7 @@ namespace PCBootLogo
       // btnApply
       // 
       this.btnApply.Enabled = false;
-      this.btnApply.Location = new System.Drawing.Point(183, 18);
+      this.btnApply.Location = new System.Drawing.Point(11, 200);
       this.btnApply.Margin = new System.Windows.Forms.Padding(2);
       this.btnApply.Name = "btnApply";
       this.btnApply.Size = new System.Drawing.Size(149, 55);
@@ -49,7 +51,7 @@ namespace PCBootLogo
       // 
       // btnRecovery
       // 
-      this.btnRecovery.Location = new System.Drawing.Point(578, 18);
+      this.btnRecovery.Location = new System.Drawing.Point(11, 276);
       this.btnRecovery.Margin = new System.Windows.Forms.Padding(2);
       this.btnRecovery.Name = "btnRecovery";
       this.btnRecovery.Size = new System.Drawing.Size(149, 55);
@@ -62,7 +64,7 @@ namespace PCBootLogo
       // 
       this.cbxShowLoadingIcon.AutoSize = true;
       this.cbxShowLoadingIcon.Enabled = false;
-      this.cbxShowLoadingIcon.Location = new System.Drawing.Point(371, 21);
+      this.cbxShowLoadingIcon.Location = new System.Drawing.Point(11, 140);
       this.cbxShowLoadingIcon.Margin = new System.Windows.Forms.Padding(2);
       this.cbxShowLoadingIcon.Name = "cbxShowLoadingIcon";
       this.cbxShowLoadingIcon.Size = new System.Drawing.Size(171, 24);
@@ -73,9 +75,10 @@ namespace PCBootLogo
       // 
       // label1
       // 
+      this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.label1.AutoSize = true;
       this.label1.ForeColor = System.Drawing.Color.DarkRed;
-      this.label1.Location = new System.Drawing.Point(572, 94);
+      this.label1.Location = new System.Drawing.Point(535, 18);
       this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
       this.label1.Name = "label1";
       this.label1.Size = new System.Drawing.Size(151, 20);
@@ -86,18 +89,30 @@ namespace PCBootLogo
       // 
       this.lblFormat.AutoSize = true;
       this.lblFormat.ForeColor = System.Drawing.Color.DarkRed;
-      this.lblFormat.Location = new System.Drawing.Point(14, 94);
+      this.lblFormat.Location = new System.Drawing.Point(11, 18);
       this.lblFormat.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
       this.lblFormat.Name = "lblFormat";
       this.lblFormat.Size = new System.Drawing.Size(113, 20);
       this.lblFormat.TabIndex = 5;
       this.lblFormat.Text = "Format: , Max: ";
       // 
+      // picPreview
+      // 
+      this.picPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.picPreview.BackColor = System.Drawing.Color.Black;
+      this.picPreview.Location = new System.Drawing.Point(186, 51);
+      this.picPreview.Name = "picPreview";
+      this.picPreview.Size = new System.Drawing.Size(500, 280);
+      this.picPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+      this.picPreview.TabIndex = 6;
+      this.picPreview.TabStop = false;
+      // 
       // MainForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(748, 135);
+      this.ClientSize = new System.Drawing.Size(698, 342);
+      this.Controls.Add(this.picPreview);
       this.Controls.Add(this.lblFormat);
       this.Controls.Add(this.label1);
       this.Controls.Add(this.cbxShowLoadingIcon);
@@ -110,6 +125,7 @@ namespace PCBootLogo
       this.Name = "MainForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Boot logo changer";
+      ((System.ComponentModel.ISupportInitialize)(this.picPreview)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -123,6 +139,7 @@ namespace PCBootLogo
         private System.Windows.Forms.CheckBox cbxShowLoadingIcon;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblFormat;
-    }
+    private PictureBox picPreview;
+  }
 }
 

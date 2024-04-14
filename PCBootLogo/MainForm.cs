@@ -29,6 +29,9 @@ namespace PCBootLogo {
           cbxShowLoadingIcon.Checked = model.DisplayLoadingIco;
           cbxShowLoadingIcon.Enabled = true;
         }
+        if (!string.IsNullOrEmpty(model.ImagePath) && File.Exists(model.ImagePath)) {
+          picPreview.ImageLocation = model.ImagePath;
+        }
 
         lblFormat.Text = $"Format: {model.Filter} / Max: {model.DefaultWidth}x{model.DefaultHeight}";
       };
@@ -47,15 +50,15 @@ namespace PCBootLogo {
 
     private void btnSelectImage_Click(object sender, EventArgs e) {
       model.SelectedImageClick();
-      showTip();
+      ShowTip();
     }
 
     private void btnApply_Click(object sender, EventArgs e) {
       model.SaveLogoClick();
-      showTip();
+      ShowTip();
     }
 
-    private void showTip() {
+    private void ShowTip() {
       if (model.ShowWarning) {
         MessageBox.Show(model.ShowWarnInfo, LogoModel.AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         model.ShowWarning = false;
@@ -66,18 +69,25 @@ namespace PCBootLogo {
         model.ShowSuccessTip = false;
       }
 
+      if (!string.IsNullOrEmpty(model.ImagePath) && File.Exists(model.ImagePath)) {
+        picPreview.ImageLocation = model.ImagePath;
+      }
+      else {
+        picPreview.Image = null;
+      }
+
       btnApply.Enabled = model.FunEnable;
       btnRecovery.Enabled = model.CanRecovery;
     }
 
     private void btnRecovery_Click(object sender, EventArgs e) {
       model.ToRecovery();
-      showTip();
+      ShowTip();
     }
 
     private void cbxShowLoadingIcon_CheckedChanged(object sender, EventArgs e) {
       if (!cbxShowLoadingIcon.Enabled) return;
-      var result = model.ChangeLodingIco(cbxShowLoadingIcon.Checked);
+      var result = LogoModel.ChangeLoadingIco(cbxShowLoadingIcon.Checked);
       MessageBox.Show(result ? "Done!" : "Failed!", LogoModel.AppTitle, MessageBoxButtons.OK, 
         result ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
     }
