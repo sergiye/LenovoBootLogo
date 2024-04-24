@@ -8,11 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace PCBootLogo {
+namespace LenovoBootLogo {
 
   public class LogoModel {
 
-    public const string AppTitle = "PC Boot Logo";
+    public const string AppTitle = "LenovoBootLogo";
 
     private string GetTempLogoFilePath(string extension) {
       return $"mylogo_{DefaultWidth}x{DefaultHeight}{extension}";

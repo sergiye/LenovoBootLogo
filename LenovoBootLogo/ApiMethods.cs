@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace PCBootLogo {
+namespace LenovoBootLogo {
 
   public static class ApiMethods {
   
@@ -24,7 +24,7 @@ namespace PCBootLogo {
     private static IntPtr ApiLibraryDllHandler = IntPtr.Zero;
 
     public static bool InitUnmanagedLibrary() {
-      using (var resource = Assembly.GetExecutingAssembly().GetManifestResourceStream("PCBootLogo.AIToolAPI.dll")) {
+      using (var resource = Assembly.GetExecutingAssembly().GetManifestResourceStream("LenovoBootLogo.AIToolAPI.dll")) {
         try {
           using (var outFile = File.Create(ApiLibraryDllPath)) {
             const int sz = 4096;

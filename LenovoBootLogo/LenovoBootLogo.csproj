@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{3DF19333-D9AA-4CFD-8B0F-21DF0916508C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>PCBootLogo</RootNamespace>
-    <AssemblyName>PCBootLogo</AssemblyName>
+    <RootNamespace>LenovoBootLogo</RootNamespace>
+    <AssemblyName>LenovoBootLogo</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

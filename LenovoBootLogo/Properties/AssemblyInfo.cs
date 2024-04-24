@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("PCBootLogo")]
+[assembly: AssemblyTitle("LenovoBootLogo")]
 [assembly: AssemblyDescription("Utility for changing PC boot logo")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Sergiy Yegoshyn")]
-[assembly: AssemblyProduct("PCBootLogo")]
+[assembly: AssemblyProduct("LenovoBootLogo")]
 [assembly: AssemblyCopyright("Copyright © Sergiy Egoshyn 2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
