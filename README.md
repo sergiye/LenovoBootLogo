@@ -1,10 +1,8 @@
 # LenovoBootLogo
 
-[![Stars](https://img.shields.io/github/stars/sergiye/LenovoBootLogo?style=flat-square)](https://github.com/sergiye/LenovoBootLogo/stargazers)
-[![Fork](https://img.shields.io/github/forks/sergiye/LenovoBootLogo?style=flat-square)](https://github.com/sergiye/LenovoBootLogo/fork)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/sergiye/LenovoBootLogo?style=plastic)
-![GitHub all releases](https://img.shields.io/github/downloads/sergiye/LenovoBootLogo/total?style=plastic)
-![GitHub last commit](https://img.shields.io/github/last-commit/sergiye/LenovoBootLogo?style=plastic)
+[![Release](https://img.shields.io/github/v/release/sergiye/LenovoBootLogo?style=for-the-badge)](https://github.com/sergiye/LenovoBootLogo/releases/latest)
+![Downloads](https://img.shields.io/github/downloads/sergiye/LenovoBootLogo/total?style=for-the-badge&color=ff4f42)
+![Last commit](https://img.shields.io/github/last-commit/sergiye/LenovoBootLogo?style=for-the-badge&color=00AD00)
 
 
 LenovoBootLogo is a portable, open-source utility for customizing the boot logo (screen) of your PC.
@@ -20,6 +18,10 @@ LenovoBootLogo is a portable, open-source utility for customizing the boot logo 
 To use:
 * Download the latest version from releases
 * There is no installation required, just start executable file from anywhere on your computer and have fun!
+
+### What will it look like?
+
+[<img src="https://github.com/sergiye/LenovoBootLogo/raw/master/preview.png" alt="Themes" width="300"/>](https://github.com/sergiye/LenovoBootLogo/raw/master/preview.png)
 
 
 ## Build
